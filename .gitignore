@@ -1,0 +1,36 @@
+# ---------- Python / FastAPI ----------
+venv/
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+
+# SISA models (VERY IMPORTANT)
+sisa_models/
+*.joblib
+*.pkl
+
+# logs
+*.log
+
+# ---------- Node / React ----------
+node_modules/
+dist/
+build/
+
+# Vite
+.vite/
+
+# env files
+frontend/.env
+backend/.env
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
