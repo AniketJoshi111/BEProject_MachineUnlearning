@@ -79,16 +79,44 @@ export default function App() {
     catch { setStep("unlearn", "error"); setGlobalStatus("Unlearning failed."); }
   };
 
+  // const handlePredict = async () => {
+  //   if (!file) return;
+  //   setStep("predict", "loading"); setResult(null);
+  //   setGlobalStatus("Analyzing PDF features with trained classifier...");
+  //   try {
+  //     const formData = new FormData(); formData.append("file", file);
+  //     const res = await axios.post(`${API}/predict`, formData, { headers: { "Content-Type": "multipart/form-data" } });
+  //     setResult(res.data.result || res.data); setStep("predict", "done"); setGlobalStatus("Analysis complete.");
+  //   } catch { setStep("predict", "error"); setGlobalStatus("Prediction failed. Check backend connection."); }
+  // };
+
   const handlePredict = async () => {
-    if (!file) return;
-    setStep("predict", "loading"); setResult(null);
-    setGlobalStatus("Analyzing PDF features with trained classifier...");
-    try {
-      const formData = new FormData(); formData.append("file", file);
-      const res = await axios.post(`${API}/predict`, formData, { headers: { "Content-Type": "multipart/form-data" } });
-      setResult(res.data.result || res.data); setStep("predict", "done"); setGlobalStatus("Analysis complete.");
-    } catch { setStep("predict", "error"); setGlobalStatus("Prediction failed. Check backend connection."); }
-  };
+  if (!file) return;
+  setStep("predict", "loading"); setResult(null);
+  setGlobalStatus("Analyzing PDF features with trained classifier...");
+  try {
+    const formData = new FormData(); 
+    formData.append("file", file);
+    const res = await axios.post(`${API}/predict`, formData, { 
+      headers: { "Content-Type": "multipart/form-data" } 
+    });
+
+    console.log("API response:", res.data); // 👈 Add this to see the exact shape
+
+    // Try all common response shapes:
+    const prediction = res.data.result 
+      || res.data.prediction 
+      || res.data.label 
+      || res.data;
+
+    setResult(typeof prediction === "string" ? prediction : JSON.stringify(prediction));
+    setStep("predict", "done"); 
+    setGlobalStatus("Analysis complete.");
+  } catch { 
+    setStep("predict", "error"); 
+    setGlobalStatus("Prediction failed. Check backend connection."); 
+  }
+};
 
   const handleDrop = (e) => {
     e.preventDefault(); setDragOver(false);
