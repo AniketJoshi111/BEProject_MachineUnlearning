@@ -21,9 +21,10 @@ origins = [
     "http://127.0.0.1:5173",
 ]
 
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,      # DO NOT USE "*" for now
+    allow_origins=["https://be-project-machine-unlearning.vercel.app/"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
