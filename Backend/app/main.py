@@ -16,18 +16,14 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(title="Malicious PDF Detection API")
 
 # THEN add CORS (order matters)
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,      # DO NOT USE "*" for now
+    allow_origins=["http://localhost:5173"],  # your React dev server
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.post("/train")
 def train():

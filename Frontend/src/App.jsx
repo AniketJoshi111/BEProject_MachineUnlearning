@@ -10,7 +10,7 @@ const ShieldIcon = () => (
   </svg>
 );
 
-const BrainIcon = () => (
+const BrainIcon = () => ( 
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
     <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/>
     <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/>
@@ -80,15 +80,29 @@ export default function App() {
   };
 
   const handlePredict = async () => {
-    if (!file) return;
-    setStep("predict", "loading"); setResult(null);
-    setGlobalStatus("Analyzing PDF features with trained classifier...");
-    try {
-      const formData = new FormData(); formData.append("file", file);
-      const res = await axios.post(`${API}/predict`, formData, { headers: { "Content-Type": "multipart/form-data" } });
-      setResult(res.data.result || res.data); setStep("predict", "done"); setGlobalStatus("Analysis complete.");
-    } catch { setStep("predict", "error"); setGlobalStatus("Prediction failed. Check backend connection."); }
-  };
+  if (!file) return;
+  setStep("predict", "loading"); setResult(null);
+  setGlobalStatus("Analyzing PDF features with trained classifier...");
+  try {
+    const formData = new FormData(); formData.append("file", file);
+    const res = await axios.post(`${API}/predict`, formData, { headers: { "Content-Type": "multipart/form-data" } });
+    
+    // Handle all possible response shapes from backend
+    const prediction = 
+      res.data.result ||
+      res.data.prediction ||
+      res.data.label ||
+      res.data.class ||
+      (typeof res.data === "string" ? res.data : null);
+
+    setResult(prediction);
+    setStep("predict", "done"); 
+    setGlobalStatus("Analysis complete.");
+  } catch { 
+    setStep("predict", "error"); 
+    setGlobalStatus("Prediction failed. Check backend connection."); 
+  }
+};
 
   const handleDrop = (e) => {
     e.preventDefault(); setDragOver(false);
