@@ -18,6 +18,7 @@ def shard_dataset(X, y):
 
     return shards
 
+
 def train_sisa(X, y):
     shards = shard_dataset(X, y)
     models = []

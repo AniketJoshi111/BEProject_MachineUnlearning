@@ -1,0 +1,334 @@
+
+<style>
+  h2.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+  .dash{padding:1rem 0;font-family:var(--font-sans)}
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem}
+  .metric{background:var(--surface-1);border-radius:var(--radius);padding:.85rem 1rem}
+  .metric-label{font-size:12px;color:var(--text-muted);margin-bottom:4px}
+  .metric-value{font-size:22px;font-weight:500;color:var(--text-primary)}
+  .metric-sub{font-size:11px;color:var(--text-secondary);margin-top:2px}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.5rem}
+  .card{background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;padding:1rem 1.25rem}
+  .card-title{font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.85rem;font-weight:500}
+  .shard-grid{display:flex;flex-direction:column;gap:6px}
+  .shard-row{display:flex;align-items:center;gap:8px}
+  .shard-label{font-size:11px;color:var(--text-secondary);width:52px;flex-shrink:0}
+  .slices{display:flex;gap:4px;flex:1}
+  .slice{height:28px;border-radius:4px;flex:1;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+  .slice-label{position:relative;z-index:1}
+  .slice-progress{position:absolute;top:0;left:0;height:100%;transition:width .4s ease}
+  .slice.idle{background:var(--surface-1);color:var(--text-muted);border:0.5px solid var(--border)}
+  .slice.training{background:#E6F1FB;color:#0C447C;border:0.5px solid #B5D4F4}
+  .slice.trained{background:#EAF3DE;color:#27500A;border:0.5px solid #C0DD97}
+  .slice.poisoned{background:#FCEBEB;color:#A32D2D;border:0.5px solid #F7C1C1}
+  .slice.unlearning{background:#FAEEDA;color:#633806;border:0.5px solid #FAC775}
+  .slice.clean{background:#EAF3DE;color:#27500A;border:0.5px solid #97C459}
+  .dark .slice.training{background:#0C447C;color:#B5D4F4;border-color:#185FA5}
+  .dark .slice.trained{background:#27500A;color:#C0DD97;border-color:#3B6D11}
+  .dark .slice.poisoned{background:#501313;color:#F7C1C1;border-color:#791F1F}
+  .dark .slice.unlearning{background:#633806;color:#FAC775;border-color:#854F0B}
+  .dark .slice.clean{background:#173404;color:#C0DD97;border-color:#3B6D11}
+  .timeline{display:flex;flex-direction:column;gap:6px}
+  .tl-item{display:flex;align-items:flex-start;gap:8px}
+  .tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+  .tl-dot.done{background:#639922}
+  .tl-dot.active{background:#BA7517;animation:pulse .9s ease-in-out infinite}
+  .tl-dot.idle{background:var(--border-strong)}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+  .tl-text{font-size:13px;color:var(--text-primary)}
+  .tl-sub{font-size:11px;color:var(--text-muted)}
+  .controls{display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center}
+  button{font-size:13px;padding:6px 14px;border-radius:var(--radius);border:0.5px solid var(--border-strong);background:transparent;color:var(--text-primary);cursor:pointer}
+  button:hover{background:var(--surface-1)}
+  button:active{transform:scale(.98)}
+  button.primary{background:var(--fill-accent);color:var(--on-accent);border-color:var(--fill-accent)}
+  button.primary:hover{background:var(--fill-accent-hover)}
+  .speed-label{font-size:12px;color:var(--text-secondary)}
+  .stat-row{display:flex;gap:8px;margin-top:.5rem}
+  .stat-pill{font-size:11px;padding:2px 8px;border-radius:100px;background:var(--surface-1);border:0.5px solid var(--border);color:var(--text-secondary)}
+  .stat-pill.green{background:#EAF3DE;color:#27500A;border-color:#C0DD97}
+  .stat-pill.red{background:#FCEBEB;color:#A32D2D;border-color:#F7C1C1}
+  .stat-pill.amber{background:#FAEEDA;color:#633806;border-color:#FAC775}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:.85rem}
+  .leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-secondary)}
+  .leg-dot{width:10px;height:10px;border-radius:2px}
+  .acc-bar-wrap{margin-top:.5rem}
+  .acc-bar-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-bottom:3px}
+  .acc-bar-track{height:10px;background:var(--surface-1);border-radius:5px;border:0.5px solid var(--border);overflow:hidden}
+  .acc-bar-fill{height:100%;border-radius:5px;transition:width .5s ease}
+  .phase-banner{text-align:center;padding:6px;border-radius:var(--radius);font-size:12px;font-weight:500;margin-bottom:1rem;transition:all .3s}
+  .phase-banner.train{background:#E6F1FB;color:#185FA5;border:0.5px solid #B5D4F4}
+  .phase-banner.attack{background:#FCEBEB;color:#A32D2D;border:0.5px solid #F7C1C1}
+  .phase-banner.unlearn{background:#FAEEDA;color:#633806;border:0.5px solid #FAC775}
+  .phase-banner.done{background:#EAF3DE;color:#3B6D11;border:0.5px solid #C0DD97}
+  .phase-banner.idle{background:var(--surface-1);color:var(--text-muted);border:0.5px solid var(--border)}
+</style>
+<div class="dash">
+  <h2 class="sr-only">SISA machine unlearning visualizer showing shards, slices, and unlearning progress</h2>
+
+  <div id="phase-banner" class="phase-banner idle">System idle — run the pipeline to visualize unlearning</div>
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-label">Total shards</div>
+      <div class="metric-value" id="m-shards">4</div>
+      <div class="metric-sub">independent partitions</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Slices per shard</div>
+      <div class="metric-value" id="m-slices">3</div>
+      <div class="metric-sub">incremental checkpoints</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Poisoned slices</div>
+      <div class="metric-value" id="m-poisoned" style="color:#E24B4A">0</div>
+      <div class="metric-sub">flagged for removal</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Model accuracy</div>
+      <div class="metric-value" id="m-acc">—</div>
+      <div class="metric-sub" id="m-acc-sub">not trained yet</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="primary" onclick="runFull()">▶ Run full pipeline</button>
+    <button onclick="runStep()">Step →</button>
+    <button onclick="resetAll()">↺ Reset</button>
+    <span class="speed-label">Speed:</span>
+    <input type="range" min="1" max="5" value="3" id="speed" style="width:80px">
+    <span id="speed-label" style="font-size:12px;color:var(--text-secondary)">normal</span>
+  </div>
+
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#B5D4F4"></div>training</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#C0DD97"></div>trained</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#F7C1C1"></div>poisoned</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#FAC775"></div>unlearning</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#97C459"></div>clean</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--border-strong)"></div>idle</div>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">Shard & slice map</div>
+      <div class="shard-grid" id="shard-grid"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Pipeline timeline</div>
+      <div class="timeline" id="timeline"></div>
+      <div class="acc-bar-wrap">
+        <div class="acc-bar-label"><span>Accuracy</span><span id="acc-val">—</span></div>
+        <div class="acc-bar-track"><div class="acc-bar-fill" id="acc-bar" style="width:0%;background:#639922"></div></div>
+      </div>
+      <div class="acc-bar-wrap" style="margin-top:8px">
+        <div class="acc-bar-label"><span>Data integrity</span><span id="int-val">100%</span></div>
+        <div class="acc-bar-track"><div class="acc-bar-fill" id="int-bar" style="width:100%;background:#639922"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const NUM_SHARDS = 4, NUM_SLICES = 3;
+const POISON_TARGETS = [{s:1,sl:1},{s:2,sl:2},{s:3,sl:0}];
+
+let state = {
+  slices: Array.from({length:NUM_SHARDS},()=>Array(NUM_SLICES).fill('idle')),
+  phase: 'idle',
+  step: 0,
+  acc: 0,
+  integrity: 100,
+  running: false
+};
+
+const speedMap = {1:1200,2:900,3:600,4:350,5:180};
+const speedNames = {1:'slow',2:'medium',3:'normal',4:'fast',5:'turbo'};
+
+document.getElementById('speed').addEventListener('input', function(){
+  document.getElementById('speed-label').textContent = speedNames[this.value];
+});
+
+function delay(ms){ return new Promise(r=>setTimeout(r,ms)); }
+function getDelay(){ return speedMap[document.getElementById('speed').value]; }
+
+function isPoisoned(sIdx,slIdx){
+  return POISON_TARGETS.some(p=>p.s===sIdx&&p.sl===slIdx);
+}
+
+const STEPS = ['train','attack','unlearn','done'];
+
+const TL_ITEMS = [
+  {id:'tl-train',label:'Train model',sub:'Fit SISA shards on clean data',phase:'train'},
+  {id:'tl-attack',label:'Simulate attack',sub:'Inject poisoned samples into slices',phase:'attack'},
+  {id:'tl-unlearn',label:'Machine unlearning',sub:'Retrain only affected shards from clean checkpoints',phase:'unlearn'},
+  {id:'tl-done',label:'Model restored',sub:'Clean state verified — ready to predict',phase:'done'},
+];
+
+function buildGrid(){
+  const g = document.getElementById('shard-grid');
+  g.innerHTML='';
+  for(let s=0;s<NUM_SHARDS;s++){
+    const row=document.createElement('div');
+    row.className='shard-row';
+    const lbl=document.createElement('span');
+    lbl.className='shard-label';
+    lbl.textContent=`Shard ${s+1}`;
+    row.appendChild(lbl);
+    const slices=document.createElement('div');
+    slices.className='slices';
+    for(let sl=0;sl<NUM_SLICES;sl++){
+      const div=document.createElement('div');
+      div.id=`slice-${s}-${sl}`;
+      div.className=`slice ${state.slices[s][sl]}`;
+      div.innerHTML=`<span class="slice-label">S${sl+1}</span>`;
+      div.title=`Shard ${s+1}, Slice ${sl+1}`;
+      div.onclick=()=>sendPrompt(`Explain what happens to shard ${s+1}, slice ${sl+1} during unlearning`);
+      slices.appendChild(div);
+    }
+    row.appendChild(slices);
+    g.appendChild(row);
+  }
+}
+
+function buildTimeline(){
+  const tl=document.getElementById('timeline');
+  tl.innerHTML='';
+  TL_ITEMS.forEach(item=>{
+    const div=document.createElement('div');
+    div.className='tl-item';
+    div.id=item.id;
+    const dot=document.createElement('div');
+    dot.className='tl-dot idle';
+    dot.id=item.id+'-dot';
+    const text=document.createElement('div');
+    text.innerHTML=`<div class="tl-text">${item.label}</div><div class="tl-sub">${item.sub}</div>`;
+    div.appendChild(dot);
+    div.appendChild(text);
+    tl.appendChild(div);
+  });
+}
+
+function setSlice(s,sl,status){
+  state.slices[s][sl]=status;
+  const el=document.getElementById(`slice-${s}-${sl}`);
+  if(el){ el.className=`slice ${status}`; }
+}
+
+function setTLDot(id,status){
+  const el=document.getElementById(id+'-dot');
+  if(el){ el.className=`tl-dot ${status}`; }
+}
+
+function setBanner(phase,text){
+  const el=document.getElementById('phase-banner');
+  el.className=`phase-banner ${phase}`;
+  el.textContent=text;
+}
+
+function setMetrics(){
+  document.getElementById('m-poisoned').textContent = POISON_TARGETS.length;
+  document.getElementById('m-acc').textContent = state.acc ? state.acc+'%' : '—';
+  document.getElementById('m-acc-sub').textContent = state.phase==='attack' ? 'degraded by attack' : state.acc ? 'on clean test set' : 'not trained yet';
+  document.getElementById('acc-val').textContent = state.acc ? state.acc+'%' : '—';
+  document.getElementById('acc-bar').style.width = (state.acc||0)+'%';
+  document.getElementById('acc-bar').style.background = state.phase==='attack'?'#E24B4A':'#639922';
+  document.getElementById('int-val').textContent = state.integrity+'%';
+  document.getElementById('int-bar').style.width = state.integrity+'%';
+  document.getElementById('int-bar').style.background = state.integrity<80?'#E24B4A':state.integrity<95?'#BA7517':'#639922';
+}
+
+async function runTrain(){
+  setBanner('train','Phase 1 — Training SISA shards on clean PDF feature dataset');
+  setTLDot('tl-train','active');
+  for(let s=0;s<NUM_SHARDS;s++){
+    for(let sl=0;sl<NUM_SLICES;sl++){
+      setSlice(s,sl,'training');
+      await delay(getDelay()*0.5);
+      setSlice(s,sl,'trained');
+      await delay(getDelay()*0.3);
+    }
+  }
+  state.acc=93; state.integrity=100;
+  setTLDot('tl-train','done');
+  setMetrics();
+  await delay(getDelay());
+}
+
+async function runAttack(){
+  setBanner('attack','Phase 2 — Injecting poisoned samples to simulate adversarial attack');
+  setTLDot('tl-attack','active');
+  for(const p of POISON_TARGETS){
+    setSlice(p.s,p.sl,'poisoned');
+    await delay(getDelay()*0.7);
+  }
+  state.acc=61; state.integrity=42;
+  setTLDot('tl-attack','done');
+  setMetrics();
+  await delay(getDelay());
+}
+
+async function runUnlearn(){
+  setBanner('unlearn','Phase 3 — Machine unlearning: retraining affected shards from clean checkpoints');
+  setTLDot('tl-unlearn','active');
+  const affectedShards=[...new Set(POISON_TARGETS.map(p=>p.s))];
+  for(const s of affectedShards){
+    const poisonSlice=POISON_TARGETS.find(p=>p.s===s).sl;
+    for(let sl=poisonSlice;sl<NUM_SLICES;sl++){
+      setSlice(s,sl,'unlearning');
+      await delay(getDelay()*0.6);
+      setSlice(s,sl,'clean');
+      await delay(getDelay()*0.3);
+    }
+  }
+  state.acc=91; state.integrity=100;
+  setTLDot('tl-unlearn','done');
+  setMetrics();
+  await delay(getDelay());
+}
+
+async function runDone(){
+  setBanner('done','Unlearning complete — model restored to clean state, ready to predict');
+  setTLDot('tl-done','done');
+  setMetrics();
+}
+
+const PIPELINE=[runTrain,runAttack,runUnlearn,runDone];
+
+async function runFull(){
+  if(state.running)return;
+  resetAll();
+  state.running=true;
+  for(const fn of PIPELINE){
+    await fn();
+  }
+  state.running=false;
+}
+
+async function runStep(){
+  if(state.running)return;
+  if(state.step>=PIPELINE.length){resetAll();return;}
+  state.running=true;
+  await PIPELINE[state.step]();
+  state.step++;
+  state.running=false;
+}
+
+function resetAll(){
+  state={slices:Array.from({length:NUM_SHARDS},()=>Array(NUM_SLICES).fill('idle')),phase:'idle',step:0,acc:0,integrity:100,running:false};
+  buildGrid();
+  buildTimeline();
+  setBanner('idle','System idle — run the pipeline to visualize unlearning');
+  document.getElementById('m-poisoned').textContent='0';
+  document.getElementById('m-acc').textContent='—';
+  document.getElementById('m-acc-sub').textContent='not trained yet';
+  document.getElementById('acc-val').textContent='—';
+  document.getElementById('acc-bar').style.width='0%';
+  document.getElementById('int-val').textContent='100%';
+  document.getElementById('int-bar').style.width='100%';
+}
+
+buildGrid();
+buildTimeline();
+setMetrics();
+</script>

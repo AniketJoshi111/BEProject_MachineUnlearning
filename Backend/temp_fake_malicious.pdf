@@ -1,0 +1,88 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog
+   /Pages 2 0 R
+   /OpenAction 5 0 R
+   /AcroForm 6 0 R
+   /AA << /O 5 0 R >>
+   /Encrypt << /Filter /Standard >>
+   /ObjStm 9 0 R
+>>
+endobj
+
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+
+3 0 obj
+<< /Type /Page
+   /Parent 2 0 R
+   /MediaBox [0 0 612 792]
+   /Contents 4 0 R
+   /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> >>
+>>
+endobj
+
+4 0 obj
+<< /Length 200 >>
+stream
+BT /F1 12 Tf 100 700 Td (Malicious Test PDF) Tj ET
+endstream
+endobj
+
+5 0 obj
+<< /Type /Action /S /JavaScript
+   /JS (app.alert("JS"); this.print(); app.launchURL("Launch");)
+>>
+endobj
+
+6 0 obj
+<< /Type /AcroForm /Fields [7 0 R] /XFA 8 0 R >>
+endobj
+
+7 0 obj
+<< /Type /Annot /Subtype /Widget /FT /Btn /T (Launch)
+   /AA << /D << /Type /Action /S /Launch /F (cmd.exe) >> >>
+   /RichMedia << /Type /RichMedia >>
+>>
+endobj
+
+8 0 obj
+<< /Length 50 >>
+stream
+<xfa:data xmlns:xfa="xfa">XFA Colors JBIG2Decode</xfa:data>
+endstream
+endobj
+
+9 0 obj
+<< /Type /ObjStm /EmbeddedFile /N 1 /First 10 /Length 30 >>
+stream
+EmbeddedFile Colors JBIG2Decode RichMedia
+endstream
+endobj
+
+% JS Javascript OpenAction Launch EmbeddedFile AcroForm XFA
+% AA Encrypt ObjStm JBIG2Decode RichMedia Colors Page
+% obj endobj stream endstream xref trailer startxref
+% JS Javascript OpenAction Launch EmbeddedFile AcroForm XFA
+% AA Encrypt ObjStm JBIG2Decode RichMedia Colors Page
+% JS Javascript OpenAction Launch EmbeddedFile AcroForm XFA
+
+xref
+0 10
+0000000000 65535 f 
+0000000009 00000 n 
+0000000200 00000 n 
+0000000260 00000 n 
+0000000450 00000 n 
+0000000560 00000 n 
+0000000680 00000 n 
+0000000760 00000 n 
+0000000900 00000 n 
+0000000980 00000 n 
+
+trailer
+<< /Size 10 /Root 1 0 R >>
+startxref
+1100
+%%EOF
