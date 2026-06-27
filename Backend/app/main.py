@@ -22,6 +22,15 @@ app = FastAPI(title="Malicious PDF Detection API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],  # your React dev server
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://be-project-machine-unlearning.vercel.app/"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
