@@ -10,12 +10,18 @@ from app.services.prediction_service import predict_pdf
 from app.utils.pdf_features import extract_features
 #from app.services.sisa_prediction_service import sisa_predict
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+import asyncio, json
+
 
 
 # IMPORTANT: create app FIRST
 app = FastAPI(title="Malicious PDF Detection API")
 
 # THEN add CORS (order matters)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # your React dev server
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
@@ -29,6 +35,21 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+progress_log = []
+
+@app.get("/progress")
+async def progress_stream():
+    async def event_generator():
+        sent = 0
+        while True:
+            if sent < len(progress_log):
+                for event in progress_log[sent:]:
+                    yield f"data: {json.dumps(event)}\n\n"
+                sent = len(progress_log)
+            await asyncio.sleep(0.3)
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
 
 @app.post("/train")
 def train():

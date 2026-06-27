@@ -1,7 +1,11 @@
+import os
 import numpy as np
 import joblib
 from sklearn.ensemble import RandomForestClassifier
 from app.config import NUM_SHARDS, NUM_SLICES, SISA_DIR
+
+# Auto-create the directory if it doesn't exist
+os.makedirs(SISA_DIR, exist_ok=True)
 
 def shard_dataset(X, y):
     shards = []
@@ -13,6 +17,7 @@ def shard_dataset(X, y):
         shards.append((X.iloc[start:end], y[start:end]))
 
     return shards
+
 
 def train_sisa(X, y):
     shards = shard_dataset(X, y)
