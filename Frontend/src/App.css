@@ -1,38 +1,533 @@
+/* ===========================
+   GLOBAL
+=========================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: "Inter", sans-serif;
+  background: #0b1120;
+  color: #e5e7eb;
+}
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: #f3f6fb;
+  display: flex;
+  justify-content: center;
 }
 
-.container {
+/* ===========================
+   APP
+=========================== */
+
+.app {
+  width: min(1280px, 100%);
+  min-height: 100vh;
+  padding: 28px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background:
+    radial-gradient(circle at top left,#1e293b 0%,#0f172a 45%,#020617 100%);
+}
+
+/* ===========================
+   HEADER
+=========================== */
+
+.header {
+  width: 100%;
+  max-width: 1100px;
   text-align: center;
-  padding: 40px;
+  margin-bottom: 28px;
 }
 
-.card {
-  background: white;
-  padding: 25px;
-  margin: 20px auto;
-  width: 400px;
-  border-radius: 12px;
-  box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+.header-icon {
+  width: 72px;
+  height: 72px;
+  margin: auto;
+  margin-bottom: 18px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 18px;
+
+  color: #818cf8;
+
+  background: rgba(99,102,241,.12);
+
+  border:1px solid rgba(99,102,241,.3);
 }
 
-button {
-  margin: 10px;
-  padding: 12px 18px;
-  border: none;
-  background: #2563eb;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
+.header-badge{
+
+display:inline-flex;
+align-items:center;
+gap:8px;
+
+padding:7px 18px;
+
+border-radius:999px;
+
+font-size:12px;
+
+background:#1e293b;
+
+color:#a5b4fc;
+
+margin-bottom:18px;
+
 }
 
-button:hover {
-  background: #1d4ed8;
+.header h1{
+
+font-size:42px;
+
+font-weight:700;
+
+margin-bottom:14px;
+
+background:linear-gradient(
+90deg,
+#ffffff,
+#c7d2fe,
+#818cf8
+);
+
+-webkit-background-clip:text;
+
+-webkit-text-fill-color:transparent;
+
 }
 
-.status {
-  margin-top: 20px;
-  font-weight: bold;
+.header p{
+
+font-size:15px;
+
+line-height:1.7;
+
+max-width:700px;
+
+margin:auto;
+
+color:#94a3b8;
+
+}
+
+/* ===========================
+MAIN GRID
+=========================== */
+
+.main-grid{
+
+width:100%;
+
+max-width:1150px;
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:22px;
+
+margin-bottom:22px;
+
+}
+
+/* ===========================
+CARDS
+=========================== */
+
+.card{
+
+background:rgba(15,23,42,.75);
+
+backdrop-filter:blur(12px);
+
+border:1px solid rgba(255,255,255,.08);
+
+border-radius:20px;
+
+padding:24px;
+
+display:flex;
+
+flex-direction:column;
+
+}
+
+.card-title{
+
+font-size:12px;
+
+font-weight:600;
+
+letter-spacing:1px;
+
+text-transform:uppercase;
+
+color:#94a3b8;
+
+margin-bottom:18px;
+
+}
+
+/* ===========================
+PIPELINE BUTTONS
+=========================== */
+
+.pipeline{
+
+display:flex;
+
+flex-direction:column;
+
+gap:14px;
+
+}
+
+.step-btn{
+
+width:100%;
+
+padding:15px 18px;
+
+display:flex;
+
+align-items:center;
+
+gap:16px;
+
+border-radius:14px;
+
+cursor:pointer;
+
+border:none;
+
+transition:.3s;
+
+background:#111827;
+
+color:white;
+
+}
+
+.step-btn:hover{
+
+transform:translateY(-2px);
+
+}
+
+.step-btn.train{
+
+border-left:5px solid #6366f1;
+
+}
+
+.step-btn.attack{
+
+border-left:5px solid #ef4444;
+
+}
+
+.step-btn.unlearn{
+
+border-left:5px solid #10b981;
+
+}
+
+.step-icon{
+
+width:46px;
+
+height:46px;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+border-radius:12px;
+
+background:#1e293b;
+
+}
+
+/* ===========================
+UPLOAD
+=========================== */
+
+.upload-zone{
+
+border:2px dashed #4f46e5;
+
+border-radius:16px;
+
+padding:34px;
+
+text-align:center;
+
+cursor:pointer;
+
+transition:.3s;
+
+position:relative;
+
+}
+
+.upload-zone:hover{
+
+background:rgba(99,102,241,.08);
+
+}
+
+.upload-zone input{
+
+position:absolute;
+
+inset:0;
+
+opacity:0;
+
+cursor:pointer;
+
+}
+
+.upload-main{
+
+font-size:16px;
+
+margin-top:10px;
+
+font-weight:600;
+
+}
+
+.upload-sub{
+
+margin-top:6px;
+
+font-size:13px;
+
+color:#94a3b8;
+
+}
+
+.file-chip{
+
+margin-top:18px;
+
+padding:10px 16px;
+
+display:inline-flex;
+
+gap:10px;
+
+align-items:center;
+
+background:#312e81;
+
+border-radius:999px;
+
+}
+
+/* ===========================
+BUTTON
+=========================== */
+
+.analyze-btn{
+
+margin-top:18px;
+
+width:100%;
+
+padding:15px;
+
+border:none;
+
+border-radius:14px;
+
+background:#4f46e5;
+
+font-size:15px;
+
+font-weight:600;
+
+cursor:pointer;
+
+transition:.3s;
+
+color:white;
+
+}
+
+.analyze-btn:hover{
+
+background:#4338ca;
+
+}
+
+/* ===========================
+RESULT
+=========================== */
+
+.result-card{
+
+margin-top:20px;
+
+padding:18px;
+
+border-radius:16px;
+
+display:flex;
+
+gap:18px;
+
+align-items:center;
+
+}
+
+.result-card.malicious{
+
+background:#3f1115;
+
+}
+
+.result-card.benign{
+
+background:#083d2c;
+
+}
+
+.result-value{
+
+font-size:24px;
+
+font-weight:700;
+
+}
+
+/* ===========================
+VISUALIZER
+=========================== */
+
+.visualizer{
+
+width:100%;
+
+max-width:1150px;
+
+margin-top:10px;
+
+}
+
+/* ===========================
+STATUS BAR
+=========================== */
+
+.status-bar{
+
+width:100%;
+
+max-width:1150px;
+
+margin-top:22px;
+
+padding:15px 18px;
+
+border-radius:14px;
+
+background:#111827;
+
+display:flex;
+
+align-items:center;
+
+gap:12px;
+
+font-size:14px;
+
+color:#cbd5e1;
+
+}
+
+.status-dot{
+
+width:8px;
+
+height:8px;
+
+border-radius:50%;
+
+background:#10b981;
+
+}
+
+/* ===========================
+RESPONSIVE
+=========================== */
+
+@media (max-width:1280px){
+
+.app{
+
+padding:24px;
+
+}
+
+.header h1{
+
+font-size:36px;
+
+}
+
+}
+
+@media (max-width:1000px){
+
+.main-grid{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+@media (max-width:700px){
+
+.header h1{
+
+font-size:28px;
+
+}
+
+.header p{
+
+font-size:14px;
+
+}
+
+.card{
+
+padding:18px;
+
+}
+
+.app{
+
+padding:18px;
+
+}
+
 }
